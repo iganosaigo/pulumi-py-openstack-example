@@ -1,0 +1,11 @@
+---
+name: app.test
+runtime:
+  name: python
+description: Test App
+backend:
+  url: file://~
+config:
+  default_network: some-net1
+  default_image: debian-11
+  default_flavor: 1-1-5

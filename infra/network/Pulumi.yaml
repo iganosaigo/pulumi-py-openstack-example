@@ -1,0 +1,13 @@
+---
+name: infra.network
+runtime:
+  name: python
+description: Network infrastructure
+backend:
+  url: file://~
+config:
+  external_network: ext-net
+  default_router: router1
+  default_dns:
+    - 1.1.1.1
+    - 2.2.2.2

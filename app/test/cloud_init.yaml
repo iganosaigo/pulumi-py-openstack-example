@@ -1,0 +1,9 @@
+#cloud-config
+users:
+  - name: saigo
+    gecos: IganoSaigo
+    primary_group: saigo
+    groups: sudo
+    lock_passwd: true
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash

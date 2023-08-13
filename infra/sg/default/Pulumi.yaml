@@ -1,0 +1,12 @@
+---
+name: infra.sg.default
+runtime:
+  name: python
+description: Security Groups Infrastructure
+backend:
+  url: file://~
+config:
+  default_sg_rules:
+    - port: 22
+    - port: -1
+      protocol: icmp

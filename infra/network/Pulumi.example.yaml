@@ -1,0 +1,15 @@
+encryptionsalt: v1:ZF7wLoB/Epc=:v1:IOJS7Y+M8eX/bA+Z:7HxgYrg0wv4TqyLQZCMMBnd00K/hHA==
+config:
+  networks:
+    - name: some-net1 # Required
+      cidr: "192.168.98.0/24" # Required
+      network_admin_state_up: True
+      dns:
+        - 8.8.8.8
+        - 8.8.4.4
+      dhcp: True
+      dhcp_pool:
+        - 192.168.98.10
+        - 192.168.98.25
+    - name: some-net2
+      cidr: "192.168.99.0/24"

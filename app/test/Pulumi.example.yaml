@@ -1,0 +1,11 @@
+encryptionsalt: v1:NQcHQr+CUAE=:v1:g+jJ6LwV1UsoaPqx:TQU7mxI0unA96zH0HofoIENEJXDLUw==
+config:
+  app.test:inventory:
+    - host: test01
+      flavor: 1-1-10
+      image: CentOS-7
+      nat: true
+      network: some-net2
+      fixed_ip: 192.168.98.123
+    - host: test02
+      nat: true
