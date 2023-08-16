@@ -2,6 +2,11 @@ import pulumi
 import pulumi_cloudinit as cloud_init
 import yaml
 from pulumi import StackReference
+import sys
+import pathlib
+
+directory = pathlib.Path(__file__).resolve().parents[2]
+sys.path.append(directory.as_posix())
 
 import utils.basic as utils
 from utils.config_helpers import CreateVM
@@ -13,8 +18,8 @@ org = CreateVM.get_org()
 inventory = config.require_object("inventory")
 
 networks_stackref = StackReference(f"{org}/infra.network/{stack}")
-keypair_stackref = StackReference(f"{org}/infra.keys/prod")
-default_sg_stackref = StackReference(f"{org}/infra.sg.default/prod")
+keypair_stackref = StackReference(f"{org}/infra.keys/{stack}")
+default_sg_stackref = StackReference(f"{org}/infra.sg.default/{stack}")
 
 cloud_init_dict = yaml.load(
     utils.read_file("./cloud_init.yaml"),

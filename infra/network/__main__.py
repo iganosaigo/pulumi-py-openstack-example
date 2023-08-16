@@ -1,4 +1,9 @@
 import pulumi
+import sys
+import pathlib
+
+directory = pathlib.Path(__file__).resolve().parents[2]
+sys.path.append(directory.as_posix())
 
 import component
 import utils.config_helpers as helper

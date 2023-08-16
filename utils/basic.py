@@ -30,6 +30,22 @@ def str_to_address(addr, addr_type: Literal["network", "address"] = "network"):
         raise e
 
 
+def make_header(action: str, workspace: str) -> str:
+    msg = f"{action} on workspace {workspace}"
+    sep = "\n" + len(msg) * "-" + "\n"
+    return f"{sep}{msg}{sep}"
+
+
+def get_leaf_dirs(root_directory: str) -> list[str]:
+    result = []
+
+    for dirpath, dirnames, filenames in os.walk(root_directory):
+        if {"Pulumi.yaml", "__main__.py"}.issubset(filenames):
+            result.append(dirpath)
+
+    return result
+
+
 def list_values(v) -> list[str | bool | int]:
     return [x.value for x in list(v)]
 

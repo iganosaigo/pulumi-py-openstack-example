@@ -1,7 +1,12 @@
 import os
-
+import sys
+import pathlib
 import pulumi
 import pulumi_openstack as openstack
+
+directory = pathlib.Path(__file__).resolve().parents[2]
+sys.path.append(directory.as_posix())
+
 
 import component
 from utils.basic import get_ssh_public_key
