@@ -17,7 +17,7 @@ def parse_args() -> argparse.Namespace:
         "--action",
         "-a",
         help="Ation to perform",
-        choices=["up", "down", "preview"],
+        choices=["up", "destroy", "preview"],
     )
     parser.add_argument(
         "--infra-only",
@@ -34,7 +34,7 @@ def run_preview(stack: auto.Stack) -> None:
     stack.preview(on_output=print)
 
 
-def run_down(stack: auto.Stack) -> None:
+def run_destroy(stack: auto.Stack) -> None:
     header = utils.make_header("DESTROY", stack.workspace.work_dir)
     print(header)
     stack.destroy(on_output=print)
@@ -49,28 +49,39 @@ def run_up(stack: auto.Stack) -> None:
 
 def main():
     args = parse_args()
+    action = args.action
 
     # Work dirs
     root_dir = os.path.dirname(__file__)
     all_work_dirs = utils.get_leaf_dirs(root_dir)
-    action = args.action
+    infra_work_dirs = [
+        x for x in all_work_dirs if x.startswith(f"{root_dir}/infra")
+    ]
+    app_exclude = [f"{root_dir}/app/test"] # No need app/test in set
 
-    # TODO: make more clear two conditions bellow
-    # Reversed action beacouse app goes last
+    app_work_dirs = [
+        x for x in all_work_dirs if x not in set(app_exclude + infra_work_dirs)
+    ]
+
+    # Need order - we remove apps first that depends on infra
     # So it prevents stucking of OpenStack API
-    if action == "down":
-        all_work_dirs = all_work_dirs[::-1]
+    if action == "destroy":
+        work_dirs = app_work_dirs.copy()
+        work_dirs.extend(infra_work_dirs)
     elif args.infra_only and action in ["up", "preview"]:
-        all_work_dirs = all_work_dirs[:-1]
+        work_dirs = infra_work_dirs
+    else:
+        work_dirs = infra_work_dirs
+        work_dirs.extend(app_work_dirs)
 
-    for work_dir in all_work_dirs:
+    for work_dir in work_dirs:
         stack = auto.create_or_select_stack(
             stack_name=args.env, work_dir=work_dir
         )
         if action == "preview":
             run_preview(stack)
-        elif action == "down":
-            run_down(stack)
+        elif action == "destroy":
+            run_destroy(stack)
         elif action == "up":
             run_up(stack)
 

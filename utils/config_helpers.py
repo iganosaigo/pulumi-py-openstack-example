@@ -1,12 +1,13 @@
 import os
 from functools import cache
-from typing import Any
+from typing import Any, Sequence
 
 import pulumi
 import pulumi_openstack as openstack
 from pulumi import Output, StackReference
 from pulumi_cloudinit import AwaitableGetConfigResult
 from pulumi_openstack.compute import AwaitableGetFlavorResult
+from pulumi_openstack.compute.outputs import InstanceBlockDevice
 from pulumi_openstack.images import AwaitableGetImageResult
 from pulumi_openstack.networking import (
     AwaitableGetNetworkResult,
@@ -47,6 +48,22 @@ def get_network_by_name(name: str) -> AwaitableGetNetworkResult:
 @cache
 def get_router_by_name(name: str) -> AwaitableGetRouterResult:
     return openstack.networking.get_router(name=name)
+
+
+def make_output_block_devices(
+    block_devices: Sequence[InstanceBlockDevice] | None,
+) -> list:
+    if block_devices:
+        result = []
+        for device in block_devices:
+            device_output = {
+                "boot_index": device["boot_index"],
+                "delete_on_termination": device["delete_on_termination"],
+                "size": device["volume_size"],
+            }
+            result.append(device_output)
+        return result
+    return []
 
 
 class CreateVM:
@@ -97,6 +114,8 @@ class CreateVM:
         self.vm_nat = vm_obj.get("nat")
         self.vm_flavor = vm_obj.get("flavor")
         self.vm_image = vm_obj.get("image")
+        self.vm_second_iface = vm_obj.get("second_iface")
+        self.vm_boot_volume = vm_obj.get("boot_volume")
 
         self.network_name = f"{self.stack}-{self.vm_net}"
 
@@ -166,6 +185,12 @@ class CreateVM:
 
         if self.vm_fixed_ip:
             result.fixed_ip = self.vm_fixed_ip
+
+        if self.vm_second_iface is not None:
+            result.secondary_iface = self.vm_second_iface
+
+        if self.vm_boot_volume is not None:
+            result.boot_volume = self.vm_boot_volume
 
         if self.user_data:
             result.user_data = self.user_data
